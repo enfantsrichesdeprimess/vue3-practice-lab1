@@ -27,6 +27,10 @@ img {
     width: 80%;
 }
 
+.sale-text {
+    color: red;
+}
+
 .product-image,
 .product-info {
     margin-top: 10px;
