@@ -6,7 +6,7 @@
       <div class="product-info">
         <h1>{{ product }}</h1>
         <p>{{ description }}</p>
-        <span v-show="sale">Big Sale!!!</span>
+        <span v-if="inventory <= 100 && sale === true">Big Sale!!!</span>
         <p v-if="inventory > 10">In stock</p>
         <p v-else-if="inventory <= 10 && inventory > 0">Almost sold out!</p>
         <p v-else>Out of stock</p>
