@@ -1,11 +1,17 @@
 <template>
-  <div class="product-image">
-    <img :alt="altText" :src="image" />
-  </div>
-  <div class="product-info">
-    <h1>{{ product }}</h1>
-    <p>{{ description }}</p>
-    <a :href="link"> More product like this </a>
+  <div class="product">
+    <div class="product-image">
+      <img :alt="altText" :src="image" />
+    </div>
+      <div class="product-info">
+        <h1>{{ product }}</h1>
+        <p>{{ description }}</p>
+        <span v-show="sale">Big Sale!!!</span>
+        <p v-if="inventory > 10">In stock</p>
+        <p v-else-if="inventory <= 10 && inventory > 0">Almost sold out!</p>
+        <p v-else>Out of stock</p>
+        <a :href="link"> More product like this </a>
+      </div>
   </div>
 </template>
 
@@ -19,6 +25,9 @@ export default {
       image: 'assets/socks.jpg',
       altText: 'Pair Of Greeeeeeeen Socks',
       link: 'https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks',
+      inStock: true,
+      inventory: 100,
+      sale: true,
     };
   },
 };
