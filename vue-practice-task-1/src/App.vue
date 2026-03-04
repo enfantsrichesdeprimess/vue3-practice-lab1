@@ -6,7 +6,16 @@
       <div class="product-info">
         <h1>{{ product }}</h1>
         <p>{{ description }}</p>
-          <div class="sale-text">
+        <ul>
+          <li v-for="detail in details">{{ detail }}</li>
+        </ul>
+        <div v-for="variant in variants" :key="variant.variantId">
+          <p>{{ variant.variantColor }}</p>
+        </div>
+        <ul>
+          <li v-for="size in sizes">{{ size }}</li>
+        </ul>
+        <div class="sale-text">
           <span v-if="inventory <= 100 && sale === true">Big Sale!!!</span>
           </div>
         <p v-if="inventory > 10">In stock</p>
@@ -30,6 +39,18 @@ export default {
       inStock: true,
       inventory: 100,
       sale: true,
+      details: ['80% cotton', '20% polyester', 'Gender-neutral'],
+      variants: [
+        {
+          variantId: 2234,
+          variantColor: 'green'
+        },
+        {
+          variantId: 2235,
+          variantColor: 'blue'
+        }
+      ],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
     };
   },
 };
