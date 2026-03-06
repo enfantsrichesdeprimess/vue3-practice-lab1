@@ -49,6 +49,7 @@ export default {
           <p>{{ review.name }}</p>
           <p>Rating: {{ review.rating }}</p>
           <p>{{ review.review }}</p>
+          <p>Recomended:{{ review.recommend }}</p>
         </li>
       </ul>
     </div>

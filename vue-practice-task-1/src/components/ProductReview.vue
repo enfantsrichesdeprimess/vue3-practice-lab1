@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import eventBus from '../eventBus'
+
 export default {
   data() {
     return {
@@ -73,7 +75,7 @@ export default {
           rating: this.rating,
           recommend: this.recommend
         }
-        this.$emit('review-submitted', productReview)
+        eventBus.emit('submit-review', productReview)
         this.name = null
         this.review = null
         this.rating = null
