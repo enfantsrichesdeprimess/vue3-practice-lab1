@@ -143,9 +143,10 @@ export default {
           <p>{{ review.name }}</p>
           <p>Rating: {{ review.rating }}</p>
           <p>{{ review.review }}</p>
+          <p>Would recommend: {{ review.recommended === 'yes' ? ' Yes' : 'No' }}</p>
         </li>
       </ul>
     </div>
-    <product-review @submit="addReview"></product-review>
+    <product-review @submit-review="addReview"></product-review>
   </div>
 </template>
