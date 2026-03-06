@@ -1,11 +1,14 @@
 <script>
 import ProductDetails from "@/components/ProductDetails.vue";
 import ProductReview from "@/components/ProductReview.vue";
+import ProductTabs from "@/components/ProductTabs.vue";
+import eventBus from "@/eventBus.js";
 
 export default {
   components: {
     ProductDetails,
     ProductReview,
+    ProductTabs,
   },
   data() {
     return {
@@ -16,7 +19,6 @@ export default {
       altText: 'Pair Of Socks',
       link: 'https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks',
       inventory: 100,
-      details: ['80% cotton', '20% polyester', 'Gender-neutral'],
       sale: true,
       reviews: [],
       variants: [
@@ -37,21 +39,17 @@ export default {
     };
   },
   props: {
-    premium: {
-      type: Boolean,
-      required: true
-    },
     cart: {
       type: Array,
       required: true
     },
   },
   methods: {
-    addToCart () {
+    addToCart() {
       this.$emit('add-to-cart',
           this.variants[this.selectedVariant].variantId);
     },
-    updateProduct (index) {
+    updateProduct(index) {
       this.selectedVariant = index;
       console.log(index);
     },
@@ -59,36 +57,43 @@ export default {
       const variantId = this.variants[this.selectedVariant].variantId;
       this.$emit('remove-from-cart', variantId);
     },
-    addReview(productReview) {
-      this.reviews.push(productReview)
-    },
   },
-  computed: {
-    title() {
-      return this.brand + ' ' + this.product;
+    computed: {
+      title() {
+        return this.brand + ' ' + this.product;
+      },
+      image() {
+        return this.variants[this.selectedVariant].variantImage;
+      },
+      inStock() {
+        return this.variants[this.selectedVariant].variantQuantity
+      },
+      onSale() {
+        if (this.sale === true && this.variants[this.selectedVariant].variantQuantity <= 100 && this.variants[this.selectedVariant].variantQuantity >= 1) {
+          return this.brand + ' ' + this.product + ' IS ON BIG SALEE!!!'
+        } else {
+        }
+      },
+      shipping() {
+        if (this.premium) {
+          return "Free";
+        } else {
+          return 2.99
+        }
+      },
     },
-    image() {
-      return this.variants[this.selectedVariant].variantImage;
+    mounted() {
+      eventBus.on('submit-review', (productReview) => {
+        console.log('New review received via eventBus:', productReview)
+        this.reviews.push(productReview)
+      })
+
+      console.log('Product component mounted, listening for reviews...')
     },
-    inStock(){
-      return this.variants[this.selectedVariant].variantQuantity
-    },
-    onSale() {
-      if (this.sale===true && this.variants[this.selectedVariant].variantQuantity <= 100 && this.variants[this.selectedVariant].variantQuantity >=1  ) {
-        return this.brand + ' ' + this.product + ' IS ON BIG SALEE!!!'
-      }
-      else {
-      }
-    },
-    shipping() {
-      if (this.premium) {
-        return "Free";
-      } else {
-        return 2.99
-      }
+    unmounted() {
+      eventBus.off('submit-review')
     },
   }
-};
 </script>
 
 
@@ -100,10 +105,6 @@ export default {
     <div class="product-info">
       <h1>{{ title }}</h1>
       <p>{{ description }}</p>
-      <ul>
-
-        <product-details v-for="detail in details" :detail="detail"></product-details>
-      </ul>
       <div
           class="color-box"
           v-for="(variant, index) in variants"
@@ -123,7 +124,6 @@ export default {
         <p v-else-if="inStock <= 10 && inStock > 0">Almost sold out!</p>
         <p v-else :class="{ outOfStock: !inStock }">Out of stock</p>
       </div>
-      <p>Shipping: {{ shipping }}</p>
       <a :href="link"> More product like this </a>
       <div class="cart">
         <p>Cart({{ cart.length }})</p>
@@ -135,18 +135,6 @@ export default {
     >Add to cart</button>
       <br><button @click="removeFromCart">Delete one from cart</button>
     </div>
-    <div>
-      <h2>Reviews</h2>
-      <p v-if="!reviews.length">There are no reviews yet.</p>
-      <ul>
-        <li v-for="review in reviews">
-          <p>{{ review.name }}</p>
-          <p>Rating: {{ review.rating }}</p>
-          <p>{{ review.review }}</p>
-          <p>Would recommend: {{ review.recommended === 'yes' ? ' Yes' : 'No' }}</p>
-        </li>
-      </ul>
-    </div>
-    <product-review @submit-review="addReview"></product-review>
+    <product-tabs :reviews="reviews"></product-tabs>
   </div>
 </template>

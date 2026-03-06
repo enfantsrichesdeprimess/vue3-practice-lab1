@@ -7,7 +7,6 @@ export default {
   },
   data () {
     return {
-      premium: true,
       cart: [],
     }
   },
@@ -30,14 +29,8 @@ export default {
     <div class="cart">
     </div>
     <ProductCard
-        :premium="premium"
         :cart="cart"
         @remove-from-cart="removeFromCart"
         @add-to-cart="updateCart"></ProductCard>
   </div>
 </template>
-
-
-
-
-

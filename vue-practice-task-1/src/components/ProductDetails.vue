@@ -1,12 +1,7 @@
 <script>
 export default {
-  data() {
-    return {
-
-    }
-  },
   props: {
-    detail: {
+    details: {
       type: String,
       required: true
     }
@@ -15,5 +10,9 @@ export default {
 </script>
 
 <template>
-  <li>{{ detail }}</li>
+  <div>
+    <ul>
+      <li v-for="detail in details">{{ detail }}</li>
+    </ul>
+  </div>
 </template>
