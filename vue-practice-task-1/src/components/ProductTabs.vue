@@ -16,7 +16,7 @@ export default {
       selectedTab: 'Reviews',
       details: ['80% cotton', '20% polyester', 'Gender-neutral'],
       premium: true,
-
+      search: null,
     }
   },
   props: {
@@ -25,11 +25,18 @@ export default {
       required: false
     },
   },
-  methods: {
-    addReview(productReview) {
-      this.reviews.push(productReview)
-    },
-  },
+  computed: {
+    filtered() {
+        if (this.search === null || this.search === '') {
+          return this.reviews
+        } else {
+          return this.reviews.filter(review => {
+            return review.name.toLowerCase().includes(this.search.toLowerCase()) ||
+            review.review.toLowerCase().includes(this.search.toLowerCase())
+          })
+        }
+    }
+  }
 }
 </script>
 
@@ -43,9 +50,11 @@ export default {
          >{{ tab }}</span>
     </ul>
     <div v-show="selectedTab === 'Reviews'">
+        <input v-model="search" id="search" placeholder="Search"/>
       <p v-if="!reviews.length">There are no reviews yet.</p>
+      <p v-else-if="!filtered.length">No reviews match your search</p>
       <ul>
-        <li v-for="review in reviews">
+        <li v-for="review in filtered">
           <p>{{ review.name }}</p>
           <p>Rating: {{ review.rating }}</p>
           <p>{{ review.review }}</p>

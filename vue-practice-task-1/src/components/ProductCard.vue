@@ -1,4 +1,5 @@
 <script>
+import draggable from 'vuedraggable'
 import ProductDetails from "@/components/ProductDetails.vue";
 import ProductReview from "@/components/ProductReview.vue";
 import ProductTabs from "@/components/ProductTabs.vue";
@@ -6,6 +7,7 @@ import eventBus from "@/eventBus.js";
 
 export default {
   components: {
+    draggable,
     ProductDetails,
     ProductReview,
     ProductTabs,
@@ -57,6 +59,19 @@ export default {
       const variantId = this.variants[this.selectedVariant].variantId;
       this.$emit('remove-from-cart', variantId);
     },
+    cloneVariant(variant) {
+      return {
+        ...variant,
+        variantId: variant.variantId + Date.now()
+      }
+    },
+    onCartChange(event) {
+      console.log('Cart changed:', event);
+      if (event.added) {
+        const newItem = event.added.element;
+        console.log('Added to cart:', newItem);
+      }
+    }
   },
     computed: {
       title() {
@@ -72,13 +87,6 @@ export default {
         if (this.sale === true && this.variants[this.selectedVariant].variantQuantity <= 100 && this.variants[this.selectedVariant].variantQuantity >= 1) {
           return this.brand + ' ' + this.product + ' IS ON BIG SALEE!!!'
         } else {
-        }
-      },
-      shipping() {
-        if (this.premium) {
-          return "Free";
-        } else {
-          return 2.99
         }
       },
     },
@@ -105,14 +113,22 @@ export default {
     <div class="product-info">
       <h1>{{ title }}</h1>
       <p>{{ description }}</p>
-      <div
-          class="color-box"
-          v-for="(variant, index) in variants"
-          :key="variant.variantId"
-          :style="{ backgroundColor:variant.variantColor }"
-          @mouseover="updateProduct(index)"
+      <draggable
+          :list="variants"
+          :group="{ name: 'products', pull: 'clone', put: false }"
+          :sort="false"
+          :clone="cloneVariant"
+          item-key="variantId"
       >
-      </div>
+        <template #item="{ element, index }">
+          <div
+              class="color-box"
+              :style="{ backgroundColor: element.variantColor }"
+              @mouseover="updateProduct(index)"
+          >
+          </div>
+        </template>
+      </draggable>
       <ul>
         <li v-for="size in sizes">{{ size }}</li>
       </ul>
@@ -125,9 +141,23 @@ export default {
         <p v-else :class="{ outOfStock: !inStock }">Out of stock</p>
       </div>
       <a :href="link"> More product like this </a>
-      <div class="cart">
-        <p>Cart({{ cart.length }})</p>
-      </div>
+      <draggable
+          :list="cart"
+          :group="{ name: 'products', pull: false, put: true }"
+          :sort="false"
+          @change="onCartChange"
+          item-key="variantId"
+          class="cart-dropzone"
+      >
+        <template #item="{ element }">
+          <div class="cart-item">
+            {{ element.variantColor }} sock
+          </div>
+        </template>
+        <template #header>
+          <p>Cart({{ cart.length }})</p>
+        </template>
+      </draggable>
       <br><button
         v-on:click="addToCart"
         :disabled="!inStock"
